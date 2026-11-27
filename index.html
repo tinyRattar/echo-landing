@@ -37,16 +37,41 @@ main{position:relative;overflow:hidden;isolation:isolate}#field{display:block;wi
 @media(max-width:600px){.loadout{grid-template-columns:1fr;gap:12px}.loadout-rail{border-left:0;padding-left:0;border-top:1px solid var(--line);padding-top:10px;display:grid;grid-template-columns:76px 1fr;gap:12px}.loadout-rail h3{font-size:12px}#inventory{max-width:100%}}
 
 .ending-routes{border-top:1px solid var(--line);margin-top:14px}.ending-routes>div{display:grid;grid-template-columns:1fr auto;gap:4px 10px;padding:9px 0;border-top:1px solid #2f494c}.ending-routes p{margin:0;font-size:13px}.ending-routes button{grid-column:2;grid-row:1/3;align-self:center}
+
+:root{--pale:#ecf2ef;--muted:#b7c9c8;--line:#294447;--cyan:#a1dfdb}
+body{background:#080f15}
+header,footer{background:#0b171d;border-color:#283b42}
+header .brand{letter-spacing:.13em;color:#d8ece7}
+header button{padding:5px 10px;border-color:#36535a;background:#11252a;font-size:12px}
+header button:hover{background:#214149}
+main{background:#0c171d}
+.panel{border:1px solid #53747a75;border-radius:5px;background:#0a181de3;box-shadow:0 7px 25px #0004}
+.quest{width:min(285px,53vw);border-left:3px solid #6da8a7}
+.quest strong{font-size:16px}.quest p{font-size:12px;color:#afc6c6}
+#mini{width:150px;height:54px;border:1px solid #48636599}
+#chapterCard{position:absolute;z-index:2;left:50%;top:19%;transform:translateX(-50%);pointer-events:none;text-align:center;color:#e0eceb;text-shadow:0 2px 14px #000}
+#chapterCard span,#chapterCard strong{display:block}#chapterCard span{font-size:12px;color:#b8e5dc;letter-spacing:.32em}
+#chapterCard strong{font-size:clamp(26px,4vw,52px);font-weight:700;letter-spacing:.16em;margin-top:5px}
+#contextTip{position:absolute;left:50%;bottom:10%;transform:translateX(-50%);z-index:2;border:1px solid #6ca09d66;border-radius:4px;background:#0d1b20ec;padding:6px 12px;color:#d8ebe6;text-align:center;font-size:13px;pointer-events:none}
+#prompt{border-radius:5px;border-color:#8cb0a6}
+#subtitle{bottom:18%;border-radius:3px;box-shadow:0 10px 28px #02070b57}
+#toast{top:10%;border-bottom-color:#7daba1}
+#overlay .intro{border-color:#527477}
+body[data-mode=menu] #overlay .intro{max-width:640px;padding:clamp(24px,5vw,62px);background:linear-gradient(125deg,#091820f0,#12272de6);box-shadow:0 24px 70px #0007}
+body[data-mode=menu] #overlay h1{font-size:clamp(44px,8vw,88px);line-height:1.05;letter-spacing:.15em;color:#e9f2eb}
+@media(max-width:650px){#mini{width:92px;height:34px}#contextTip{bottom:11%;font-size:11px}.quest{width:min(248px,58vw)}.quest p{font-size:10px}#subtitle{bottom:22%}}
+@media(prefers-reduced-motion:reduce){#chapterCard,#contextTip{transition:none}}
+
 </style></head><body>
 <div id="shell">
-<header><div class="brand">回声落地</div><div class="header-actions"><button id="mapBtn" disabled>地图</button><button id="bagBtn" disabled>背包</button><button id="mute" aria-pressed="false">音效开</button><button id="pause" disabled>暂停</button></div></header>
+<header><div class="brand">回声落地</div><div class="header-actions"><button id="mapBtn" disabled>地图</button><button id="bagBtn" disabled>背包</button><button id="guideBtn" aria-pressed="false" title="切换任务标记">路标关</button><button id="mute" aria-pressed="false">音效开</button><button id="pause" disabled>暂停</button></div></header>
 <main id="stage"><canvas id="field" aria-label="回声落地俯视地图"></canvas>
 <div id="hud" hidden><div class="hrow"><div class="panel quest"><span class="kicker" id="chapter">序章</span><strong id="objective"></strong><p id="objectiveHint"></p></div><div class="panel"><canvas id="mini" width="320" height="77" aria-label="小地图"></canvas><span id="location"></span></div></div>
 <div class="hrow bottom"><div id="vitals" class="panel"><div><span class="kicker">生命</span><div id="hp"></div><div class="bar"><span id="hpFill"></span></div></div><div><span class="kicker">脉冲手枪</span><div id="ammo"></div><div id="ammoTrack"></div><span class="ammo-label" id="ammoHint"></span></div></div><div class="panel" id="kit"></div></div></div>
-<div id="damage"></div><div id="toast" role="status" hidden></div><div id="subtitle" hidden></div>
+<div id="damage"></div><div id="chapterCard" hidden aria-hidden="true"><span id="chapterNumber"></span><strong id="chapterName"></strong></div><div id="contextTip" hidden></div><div id="toast" role="status" hidden></div><div id="subtitle" hidden></div>
 <button type="button" id="prompt" hidden><kbd>E</kbd><b id="promptTitle"></b><small id="promptDetail"></small></button>
-<div id="overlay"><div class="intro"><span class="kicker">坠机带 · 孵化场 · 潮汐盆地</span><h1 id="title">回声落地</h1><p id="intro">你在退潮的湿地醒来。头盔里还在播放求救声，信号源却在往菌林深处移动。</p><div class="actions"><button id="primary">进入坠机带</button><button id="secondary" hidden>从头开始</button></div></div></div>
-<div id="drawer" hidden><div class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle"><h2 id="drawerTitle">站区地图</h2><div class="tabs"><div><button class="tab" id="tabMap">地图</button> <button class="tab" id="tabTasks">任务</button> <button class="tab" id="tabBag">背包</button></div><button id="closeDrawer">继续探索</button></div><section id="mapTab"><canvas id="bigMap" width="780" height="187"></canvas><p>青色菱形是当前线索，绿色门已开启，琥珀色门仍封闭。已发现的地标会留在地图上。</p><p id="mapRoutes"></p></section><section id="tasksTab" hidden><div id="log"></div></section>
+<div id="overlay"><div class="intro"><span class="kicker" id="overlayKicker">失事信号仍在广播</span><h1 id="title">回声落地</h1><p id="intro">你在退潮的湿地醒来。头盔里还在播放求救声，信号源却在往菌林深处移动。</p><div class="actions"><button id="primary">进入坠机带</button><button id="secondary" hidden>从头开始</button></div></div></div>
+<div id="drawer" hidden><div class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle"><h2 id="drawerTitle">站区地图</h2><div class="tabs"><div><button class="tab" id="tabMap">地图</button> <button class="tab" id="tabTasks">任务</button> <button class="tab" id="tabBag">背包</button></div><button id="closeDrawer">继续探索</button></div><section id="mapTab"><canvas id="bigMap" width="780" height="187"></canvas><p>白点是你的位置，绿色门已开启，琥珀色门仍封闭。</p><p id="mapRoutes"></p></section><section id="tasksTab" hidden><div id="log"></div></section>
 <section id="bagTab" hidden>
   <div class="loadout">
     <div><div class="loadout-label"><h3>随身背包</h3><span id="bagCapacity"></span></div>
@@ -61,7 +86,7 @@ main{position:relative;overflow:hidden;isolation:isolate}#field{display:block;wi
   <p id="bagNotice" role="status"></p>
 </section></div></div>
 <div id="bagTip" role="tooltip" hidden></div></main>
-<footer><div class="keys"><span><kbd>WASD</kbd> 移动</span><span><kbd>左键</kbd> 射击</span><span><kbd>R</kbd> 换弹</span><span><kbd>Space</kbd> 冲刺</span><span><kbd>E</kbd> 互动</span><span><kbd>F</kbd> 扫描</span><span><kbd>Tab</kbd> 地图</span><span><kbd>I</kbd> 背包</span></div><span class="edition">潮汐环路 · 三结局</span></footer>
+<footer><div class="keys"><span><kbd>WASD</kbd> 移动</span><span><kbd>左键</kbd> 射击</span><span><kbd>R</kbd> 换弹</span><span><kbd>Space</kbd> 冲刺</span><span><kbd>E</kbd> 互动</span><span><kbd>F</kbd> 扫描</span><span><kbd>M</kbd> 地图</span><span><kbd>I</kbd> 背包</span></div><span class="edition">第一章重制</span></footer>
 </div>
 <script>
 'use strict';
@@ -114,9 +139,13 @@ const barriers=[
   {x:3200,y:708,w:28,h:108,flag:'shellGate',art:'membrane_door'},
   {x:3678,y:358,w:38,h:150,flag:'memoryWeave',art:'membrane_door'},
 ];
-const gateOpen = gate => progress[gate.flag] || (gate.alt && progress[gate.alt]);
+const gateOpen = gate => progress[gate.flag] || (gate.alt && progress[gate.alt]) || (gate.flag==='trailOpen'&&Boolean(northGateTime));
 const landmarks=[
   {id:'wreck',x:299,y:754,name:'逃生舱残骸',color:'#e4b87e'},
+  {id:'crossing',x:449,y:514,name:'菌林岔路',color:'#a6e5ca'},
+  {id:'gills',x:788,y:303,name:'搬运虫巢径',color:'#a6e5ca'},
+  {id:'shelter',x:689,y:689,name:'断枝营地',color:'#e6bd7d'},
+  {id:'trough',x:1238,y:525,name:'孵化槽回廊',color:'#c7a0da'},
   {id:'pool',x:641,y:514,name:'孢子洼地',color:'#c7a0da'},
   {id:'bridge',x:905,y:721,name:'树冠吊桥',color:'#adca93'},
   {id:'service',x:1392,y:720,name:'维护廊门',color:'#e4b87e'},
@@ -140,6 +169,9 @@ const routes=[
   {color:'#aab4e0',points:[[3080,474],[3213,486],[3340,474],[3494,486],[3601,443],[3720,435],[3965,480]]}
 ];
 const scenery=[
+  ['cooling_conduit',246,472,108,61,0,0],['rocky_creek_bank',744,739,135,71,36,20],
+  ['lilac_mushrooms',570,722,115,102,34,32],['rocky_creek_bank',1302,499,107,71,37,21],
+  ['root_platform',671,654,146,105,0,0],['neural_roots',1068,461,109,179,0,0],
   ['cooling_conduit',365,818,136,62,38,18],['rocky_creek_bank',325,883,151,90,56,25],
   ['lilac_mushrooms',689,499,117,131,39,38],['lilac_mushrooms',795,818,133,139,45,42],
   ['neural_roots',755,379,181,90,0,0],['rocky_creek_bank',650,608,200,74,0,0],
@@ -169,12 +201,13 @@ const scenery=[
 ];
 const spores=[{x:641,y:511,rx:87,ry:70},{x:1256,y:303,rx:65,ry:48},{x:2945,y:260,rx:72,ry:54}];
 const spots={
-  scanner:{x:353,y:500,title:'拾取扫描器',detail:'解锁 F 扫描，追查求救信号',art:'scanner'},
+  scanner:{x:353,y:500,title:'取回扫描器',detail:'残骸的应答灯仍在闪',art:'scanner'},
+  relay:{x:445,y:520,title:'损坏的应答桩',detail:'扫描残留信号',art:'crew_locator'},
   cell:{x:299,y:754,title:'拆下应急电芯',detail:'逃生舱外壳的橙色电缆仍带电',art:'cooling_conduit'},
   service:{x:1394,y:721,title:'给维护廊供电',detail:'需要逃生舱的应急电芯',art:'floodgate'},
   tidalCache:{x:2420,y:755,title:'打开潮沟沉箱',detail:'退潮后可取 · 急救剂 ×1，备用弹药 ×18',art:'flight_recorder'},
   trace:{x:568,y:301,title:'搬运痕迹',detail:'按 F 扫描'},
-  membrane:{x:911,y:305,title:'活体隔膜',detail:'近距离用 F 读取搬运虫的通行信号'},
+  membrane:{x:911,y:305,title:'活体隔膜',detail:'观察搬运虫触发隔膜，再用扫描器重放信号'},
   scout:{x:664,y:662,title:'与阿枝交谈',detail:'树民斥候正在寻找同伴',art:'azhi'},
   aid:{x:504,y:687,title:'拾取应急敷料',detail:'可救治受伤的树民',art:'armor_repair_gel'},
   injured:{x:865,y:805,title:'救治受伤同伴',detail:'需要机舱应急敷料',art:'injured_companion'},
@@ -182,6 +215,7 @@ const spots={
   log:{x:835,y:238,title:'读取坠机记录',detail:'写入任务档案',art:'flight_recorder'},
   meds:{x:263,y:563,title:'拾取急救剂',detail:'急救剂 ×2',art:'first_aid_injector'},
   reserve:{x:1124,y:825,title:'拾取弹药',detail:'机舱弹药 ×24',art:'pulse_sidearm'},
+  treeKit:{x:1143,y:685,title:'收下树脂包',detail:'阿枝留在第二盏灯下的急救剂',art:'first_aid_injector'},
   memory:{x:1690,y:466,title:'接触岑遥的回声',detail:'那段求救声来自这里',art:'memory_sac'},
   memoryA:{x:1988,y:325,title:'读取旧求救',detail:'第一段记忆',art:'memory_shard'},
   memoryB:{x:2096,y:642,title:'读取迫降时的记忆',detail:'第二段记忆',art:'memory_sac'},
@@ -208,7 +242,7 @@ const spots={
   treaty:{x:2404,y:210,title:'在守渠人面前签署协议',detail:'留在树冠，保留断开连接的权利',art:'canal_keeper'}
 };
 const initialBugs=[
-  {kind:'carrier',x:637,y:271,route:[[889,306],[748,234],[637,271]],hp:4},
+  {kind:'carrier',x:637,y:271,route:[[637,271],[800,287],[925,306],[1082,306],[926,306],[801,287]],hp:4,north:true},
   {kind:'burrower',x:693,y:448,route:[[707,455],[750,380]],hp:3},
   {kind:'guard',x:876,y:488,route:[[876,488],[804,507],[920,481]],hp:4},
   {kind:'guard',x:1240,y:478,route:[[1306,432],[1374,501],[1228,545]],hp:4},
@@ -288,7 +322,7 @@ function save(label){
 function reset(s){
   progress={scanner:false,trail:false,trailOpen:false,scout:false,aid:false,rescue:false,rescueOpen:false,log:false,meds:false,reserve:false,echo:false,memoryA:false,memoryB:false,resonator:false,keeper:false,
     flood:null,highOpen:false,lowOpen:false,highNote:false,lowNote:false,alcoveOpen:false,calmed:false,supply:false,cache:false,root:false,oldMemory:false,crewMemory:false,selfMemory:false,memoryWeave:false,
-    alloy:false,tissue:false,pilot:false,council:false,corridor:false,ending:null,tracking:'merge',cell:false,serviceOpen:false,tidalCache:false,shellGate:false,...s?.progress};
+    alloy:false,tissue:false,pilot:false,council:false,corridor:false,ending:null,tracking:'merge',cell:false,serviceOpen:false,tidalCache:false,shellGate:false,relay:false,northWitness:false,bridgeCeremony:false,treeKit:false,endingSequence:null,endingStep:0,...s?.progress};
   loadBag(s?.bag);
   p={x:164,y:514,angle:0,hp:s?Math.max(50,s.hp):100,ammo:s?.ammo??CAP,reserve:s?.reserve??36,reload:0,fire:0,dash:0,burst:0,dx:0,dy:0,inv:0};
   if(s?.label==='trail')Object.assign(p,{x:900,y:307});
@@ -303,6 +337,7 @@ function reset(s){
     Object.assign(p,s.position,{inv:.65});
   }
   discovered=new Set(s?.discovered??[]);
+  resetChapter(s);
   bugs=initialBugs.map((b,i)=>({...b,max:b.hp,hp:s?.dead?.[i]?0:b.hp,index:0,angle:0,alert:0,wind:0,cool:.3,flash:0,aim:0}));
   visited=new Set(s?.visited??[]);lines=s?.lines?[...s.lines]:[];
   shots=[];acidDrops=[];pools=[];fx=[];cue=null;heardShot=null;elapsed=s?.tide??0;scanTime=scanPulse=hitTime=hitMarker=toastTime=voiceTime=0;
@@ -314,9 +349,9 @@ function audioOn(){
 }
 function tone(type){
   if(soundOff||audio?.state!=='running')return;
-  const defs={shot:[160,52,.095,.055],reload:[135,220,.10,.04],scan:[490,880,.34,.033],hit:[104,38,.22,.065],pick:[260,450,.14,.045],bite:[80,125,.17,.035],step:[200,75,.12,.032]};
+  const defs={shot:[205,47,.12,.069],reload:[135,220,.10,.04],scan:[490,880,.34,.033],hit:[104,38,.22,.065],pick:[260,450,.14,.045],bite:[93,42,.18,.042],step:[155,53,.065,.015],metal:[620,154,.074,.033],confirm:[680,320,.095,.032],acid:[260,105,.26,.025],howl:[145,82,.34,.024],echo:[277,110,.65,.024],gate:[92,39,.36,.045],dry:[240,95,.042,.022]};
   const [start,end,dur,amp]=defs[type], t=audio.currentTime, wave=audio.createOscillator(), gain=audio.createGain();
-  wave.type=type==='shot'?'triangle':'sine';
+  wave.type=['shot','metal','dry','bite','gate'].includes(type)?'triangle':'sine';
   wave.frequency.setValueAtTime(start,t);wave.frequency.exponentialRampToValueAtTime(end,t+dur);
   gain.gain.setValueAtTime(amp,t);gain.gain.exponentialRampToValueAtTime(.001,t+dur);
   wave.connect(gain).connect(audio.destination);wave.start(t);wave.stop(t+dur);
@@ -326,7 +361,7 @@ function speak(text){$('subtitle').textContent=text;$('subtitle').hidden=false;v
 function record(text){if(!lines.includes(text))lines.push(text);}
 function areaAt(o){return regions.find(z=>o.x>=z.x&&o.x<z.x+z.w&&o.y>=z.y&&o.y<z.y+z.h);}
 const memories={
-  oldMemory:'早年的勘探员交出了最后一段录音。她要星球记住自己的孩子，神经网却连求救声也记了下来。',
+  get oldMemory(){return progress.northWitness?'岑遥的定位器还合在搬运虫的背壳里。它沿旧地址送了很多年，早年的勘探队也把最后的录音托付给了这里。':'早年的勘探员交出了最后一段录音。她要星球记住自己的孩子，神经网却连求救声也记了下来。';},
   crewMemory:'岑遥：别把声音当成我。我愿意留下的，是我们上船前看过的那场雨。',
   selfMemory:'你认出了那句“别回收我”。那是你在坠落前对着失灵的应答器喊的。'
 };
@@ -366,12 +401,15 @@ function routeStatus(id){
   return {next:'treaty',hint:'回潮汐盆地，在守渠人面前签署协议。'};
 }
 function finaleObjective(){
+  const step=currentEndingStep();
+  if(step)return {name:outcomes[progress.endingSequence].label,hint:step.hint,targets:[step]};
   if(progress.ending)return {name:outcomes[progress.ending].label,hint:'这次旅程已经结束。你仍可以返回地图探索。',targets:[]};
   const id=Object.hasOwn(outcomes,progress.tracking)?progress.tracking:'merge';
   const route=routeStatus(id), targets=(Array.isArray(route.next)?route.next:[route.next]).map(key=>spots[key]);
   return {name:outcomes[id].label,hint:route.hint+' 按 J 切换追踪。',targets};
 }
 function finaleInteractions(){
+  if(progress.endingSequence)return [];
   const active=[];
   const memory=routeStatus('merge').next;
   active.push(memory);
@@ -385,7 +423,7 @@ function rememberFinale(line){record(line);save('finale');}
 function handleFinale(id){
   if(Object.hasOwn(outcomes,id)){
     const outcome=outcomes[id];
-    overlay('endingChoice',outcome.label,outcome.choice,outcome.action,()=>completeEnding(id),'继续探索',()=>switchMode('play'));
+    overlay('endingChoice',outcome.label,outcome.choice,outcome.action,()=>startEnding(id),'继续探索',()=>switchMode('play'));
     return true;
   }
   const story={
@@ -402,8 +440,8 @@ function handleFinale(id){
   return true;
 }
 function completeEnding(id){
-  if(progress.ending||!finaleInteractions().includes(id))return;
-  progress.ending=id;
+  if(progress.ending||progress.endingSequence!==id||progress.endingStep<endingStages[id].length)return;
+  progress.ending=id;progress.endingSequence=null;progress.endingStep=0;
   const outcome=outcomes[id];
   rememberFinale('终章 · '+outcome.label);
   overlay('end',outcome.label,outcome.ending,'继续探索',()=>switchMode('play'),'返回标题',menu);
@@ -415,8 +453,8 @@ function renderEndings(root){
     const row=document.createElement('div'), name=document.createElement('strong'), hint=document.createElement('p');
     name.textContent=outcome.label;hint.textContent=routeStatus(id).hint;row.append(name,hint);
     const button=document.createElement('button');
-    button.type='button';button.disabled=!!progress.ending||progress.tracking===id;
-    button.textContent=progress.ending?(progress.ending===id?'已完成':'已结束'):progress.tracking===id?'追踪中':'追踪';
+    button.type='button';button.disabled=!!progress.ending||!!progress.endingSequence||progress.tracking===id;
+    button.textContent=progress.endingSequence===id?'进行中':progress.ending?(progress.ending===id?'已完成':'已结束'):progress.tracking===id?'追踪中':'追踪';
     button.onclick=()=>{progress.tracking=id;refreshDrawer();};
     row.append(button);panel.append(row);
   }
@@ -424,7 +462,7 @@ function renderEndings(root){
 }
 
 function objective(){
-  if(!progress.scanner)return {name:'找回扫描器',hint:'搜查坠机带。装备在残骸东侧。',targets:[spots.scanner]};
+  if(!progress.scanner)return {name:'找回扫描器',hint:'沿着机舱拖痕，去看看还在闪的应答灯。',targets:[spots.scanner]};
   
   if(progress.root)return finaleObjective();
   if(progress.flood)return {name:'找到求救声的源头',hint:(progress.flood==='high'?'走北侧高地水渠':'走南侧旧排水闸')+'，到神经根岸寻找声音。',targets:[spots.root]};
@@ -432,10 +470,13 @@ function objective(){
   if(progress.echo)return {name:'调查更早的求救',hint:'在孵化场调查两段记忆。北侧栈道干燥，南侧潮沟涨落会改变通行速度。',targets:['memoryA','memoryB'].filter(k=>!progress[k]&&dist(p,spots[k])<275).map(k=>spots[k])};
   if(progress.trailOpen||progress.rescueOpen)return {name:'追踪队友的回声',hint:progress.serviceOpen?'维护廊已通电，可以从孵化场折返回声洞。':'外缘的主洞有琥珀色记忆囊。南侧还有一道旧维护门。',targets:dist(p,spots.memory)<310?[spots.memory]:[]};
   const targets=[progress.trail?spots.membrane:spots.trace,progress.rescue?spots.bridge:progress.scout?spots.injured:spots.scout];
-  return {name:'找一条进入孵化场的路',hint:progress.rescue?'回树根平台放下吊桥，或继续追踪搬运虫。':progress.trail?'沿搬运虫路线前往隔膜，或帮树民斥候找人。':'用 F 扫描搬运痕迹，或去南边与阿枝交谈。',targets};
+  return {name:'穿过菌林',hint:progress.rescue?'沿根系回到平台，阿枝会放下吊桥。':progress.trail?'观察北边的搬运虫。南侧还有求救声。':'北边的拖痕伸向菌林，南边传来断续的敲击。',targets};
 }
+
 function interactions(){
   const opts=[];
+  const ending=currentEndingStep();
+  if(ending?.input==='E')opts.push(ending.key);
   if(!progress.scanner)opts.push('scanner');
   if(!progress.meds)opts.push('meds');
   if(!progress.scanner)return opts;
@@ -445,8 +486,10 @@ function interactions(){
   if(!progress.cell)opts.push('cell');
   if(!progress.serviceOpen)opts.push('service');
   if(discovered.has('cache')&&!progress.tidalCache)opts.push('tidalCache');
-  if(progress.rescue&&!progress.rescueOpen)opts.push('bridge');
+  if(progress.rescue&&!progress.rescueOpen&&!bridgeTime)opts.push('bridge');
   if(!progress.log)opts.push('log');
+  if(progress.log&&!progress.alloy&&!progress.root)opts.push('alloy');
+  if(progress.rescueOpen&&!progress.treeKit)opts.push('treeKit');
   if(!progress.reserve)opts.push('reserve');
   if((progress.trailOpen||progress.rescueOpen)&&!progress.echo)opts.push('memory');
 
@@ -473,10 +516,15 @@ function nearest(){
 function interact(){
   if(mode!=='play')return;
   const id=nearest();if(!id)return;
+  if(currentEndingStep()?.key===id){advanceEnding('E');return;}
   if(handleFinale(id))return;
-  if(id==='injured'&&!bagCount('dressing')){note('先去西边找一份应急敷料');return;}
+  if(id==='injured'&&!bagCount('dressing')){note('敷料散落在营地西边，沿地上的白色布条找');return;}
   if(id==='scanner'){
-    progress.scanner=true;record('已找回扫描器。头盔里的求救源正在向菌林移动。');save('crash');note('扫描器已取得 · F 扫描');
+    progress.scanner=true;record('已找回扫描器。头盔里的求救源正在向菌林移动。');save('crash');note('扫描器已取得');
+    if(p.x<420)speak('应答桩还活着。先扫一下，看看信号去了多久。');
+  }else if(id==='treeKit'){
+    if(!stash('meds',1)){note('背包已满，树脂包留在原处');return;}
+    progress.treeKit=true;record('阿枝在灯下留了一包急救树脂。');note('急救剂 ×1');save('bridge');
   }else if(id==='meds'){
     
     if(!stash('meds',2)){note('背包已满，急救剂留在原地');return;}
@@ -503,8 +551,8 @@ function interact(){
     rememberFinale('从蜕壳浅滩内侧打开了水道，回神经根岸时可以走南边。');
     note('蜕壳水道已开通');
   }else if(id==='scout'){
-    progress.scout=true;record('阿枝指向南边。她的同伴受了伤，残骸附近有应急敷料。');
-    speak(progress.rescue?'阿枝认出了你替她同伴包扎的敷料，指向南侧树根平台。':'阿枝指了指地上的血迹，又向你比了一个包扎的手势。');
+    progress.scout=true;record('阿枝指向南边的断枝。她的同伴受了伤，营地入口散落着应急敷料。');
+    speak(progress.rescue?'阿枝认出了你替她同伴包扎的敷料，指向南侧树根平台。':'阿枝敲了两下树根。南面也传回来两下，接着是一声咳嗽。');
   }else if(id==='aid'){
     
     if(!stash('dressing',1)){note('背包已满，应急敷料留在原地');return;}
@@ -513,17 +561,17 @@ function interact(){
     consume('dressing');progress.rescue=true;record('伤员已获救。阿枝回到树根平台，准备放下通往孵化场外缘的吊桥。');
     speak('受伤的树民握住你的手腕，接着指向树根平台。阿枝正在那里等你。');
   }else if(id==='bridge'){
-    progress.rescueOpen=true;record('阿枝放下了吊桥。树民早就知道，虫群有一条避开幼虫槽的运送通道。');
-    save('bridge');speak('阿枝划过树皮上的两道刻痕，指向安全的那一道。');
+    bridgeTime=1.25;tone('gate');speak('阿枝：退开一点。我把桥放下来。');
   }else if(id==='log'){
     progress.log=true;record('飞行记录：求救信号在飞船抵达前已连续重复 67 次。');
-    note('已归档 · 飞行记录');
+    note('已归档 · 残骸图标出可回收的舱体合金');
   }else if(id==='reserve'){
     progress.reserve=true;p.reserve+=24;note('备用弹药 +24');
   }else if(id==='memory'){
     
     progress.echo=true;record('岑遥的回声：它一直在替我们叫人。');
-    save('echo');speak('岑遥：进来吧。那道声音在我们抵达之前，就已经在叫人了。');
+    save('echo');showChapter('第一章 · 完','回声洞口');tone('echo');
+    speak(progress.trailOpen&&progress.rescueOpen?'岑遥：你听过林子两边的声音了。现在听这一段。':progress.rescueOpen?'岑遥：我听见有人在桥上敲了两下。是你带他们过来的吗？':'岑遥：那只虫带进来的，是我的定位器。我想给你听一段东西。');
   }else if(id==='memoryA'||id==='memoryB'){
     progress[id]=true;
     const clue=id==='memoryA'?'这段求救来自一支更早坠落的勘探队，已经持续了很多年。':'迫降时脱落的反应堆正在加热地下水。下一次涨潮会把热水送进孵化场。';
@@ -553,6 +601,11 @@ function scan(){
   if(!progress.scanner){note('先拾取坠机带的扫描器');return;}
   if(scanTime>0)return;
   scanTime=1.15;scanPulse=.68;tone('scan');
+  if(advanceEnding('F'))return;
+  if(!progress.relay&&dist(p,spots.relay)<132&&clearLine(p,spots.relay)){
+    progress.relay=true;record('应答桩留着两道痕迹：北面的定位器按规律移动，南边的敲击没有应答编码。');
+    note('定位器信号向北 · 南边有敲击声');return;
+  }
   if(!discovered.has('cache')&&dist(p,spots.tidalCache)<172&&clearLine(p,spots.tidalCache)){
     discovered.add('cache');
     record('潮沟里的金属回波来自一只沉箱。只在低潮时能打开。');
@@ -561,8 +614,7 @@ function scan(){
   if(!progress.trail&&dist(p,spots.trace)<135&&clearLine(p,spots.trace)){
     progress.trail=true;record('搬运虫正沿北侧菌林往返，足迹通向一道活体隔膜。');note('已标记搬运虫路线');
   }else if(progress.trail&&!progress.trailOpen&&dist(p,spots.membrane)<125&&clearLine(p,spots.membrane)){
-    progress.trailOpen=true;record('隔膜识别了搬运虫的通行信号。虫群运送的东西里有一只人类定位器。');
-    save('trail');speak('隔膜收缩时，扫描器捕捉到一条人类识别码。它属于你的队友。');
+    northGateTime=4.5;tone('gate');note('信号同步 · 趁隔膜张开穿过去');
   }else if(progress.council&&!progress.corridor&&dist(p,spots.corridor)<105&&clearLine(p,spots.corridor)){
     if(!progress.resonator){note('先回孵化场拾取共鸣器');return;}
     progress.corridor=true;rememberFinale('共鸣信标标出了绕过树民居所的迁徙走廊。');
@@ -613,15 +665,16 @@ function dash(){
 }
 function motion(){return [Number(keys.has('KeyD'))-Number(keys.has('KeyA')),Number(keys.has('KeyS'))-Number(keys.has('KeyW'))];}
 function pop(x,y,color,r,life){fx.push({x,y,color,r,life,max:life});}
-function damage(n){
+function damage(n,source=null){
   if(!p.hp||p.inv)return;
-  p.hp=Math.max(0,p.hp-n);p.inv=.55;hitTime=.37;pop(p.x,p.y,'#ff8d7e',29,.29);tone('hit');
+  p.hp=Math.max(0,p.hp-n);p.inv=.55;hitTime=.37;damageFrom=source?Math.atan2(source.y-p.y,source.x-p.x):null;cameraJolt=.17;pop(p.x,p.y,'#ff8d7e',29,.29);tone('hit');
 }
 function fire(){
   if(p.reload||p.fire)return;
-  if(!p.ammo){reload();return;}
+  if(!p.ammo){tone('dry');p.fire=.22;reload();return;}
   const dx=Math.cos(p.angle),dy=Math.sin(p.angle);
-  p.ammo--;p.fire=.15;shots.push({x:p.x+dx*14,y:p.y+dy*14,dx,dy,life:.53});
+  p.ammo--;p.fire=.17;shots.push({x:p.x+dx*20,y:p.y+dy*20,dx,dy,life:.53});
+  muzzle=.08;cameraJolt=.075;
   heardShot={x:p.x,y:p.y,time:.4};pop(p.x+dx*23,p.y+dy*23,'#ffdc96',13,.11);tone('shot');
 }
 
@@ -647,13 +700,15 @@ function acidAttack(b,dt){
   }
   if(!seen)return;
   b.angle=Math.atan2(p.y-b.y,p.x-b.x);
-  if(!b.cool){b.acidTarget={x:p.x,y:p.y};b.wind=.58;}
+  if(!b.cool){b.acidTarget={x:p.x,y:p.y};b.wind=.72;b.windMax=.72;tone('acid');}
   b.alert=1.6;
 }
 function bugUpdate(b,dt){
   if(b.hp<=0||b.kind==='sentinel'&&progress.calmed)return;
   b.flash=Math.max(0,b.flash-dt);b.cool=Math.max(0,b.cool-dt);b.alert=Math.max(0,b.alert-dt);
   if(b.kind==='acid'){acidAttack(b,dt);return;}
+  b.stagger=Math.max(0,(b.stagger??0)-dt);
+  if(b.stagger)return;
   const d=dist(p,b), visible=d<(b.kind==='guard'?190:155)&&clearLine(b,p);
   const noise=heardShot&&dist(b,heardShot)<150;
   const route=b.kind==='carrier'&&b.route[0][0]===2994&&progress.corridor?
@@ -669,13 +724,17 @@ function bugUpdate(b,dt){
     b.lunge=Math.max(0,b.lunge-dt);
     
     const speed=b.kind==='sentinel'?390:305;
+    const oldX=b.x,oldY=b.y;
     move(b,Math.cos(b.aim)*speed*dt,Math.sin(b.aim)*speed*dt,14);
-    if(dist(b,p)<29&&clearLine(b,p))damage(b.kind==='sentinel'?24:b.kind==='guard'?18:13);
+    if(b.kind==='guard'&&Math.hypot(b.x-oldX,b.y-oldY)<speed*dt*.4){
+      b.lunge=0;b.stagger=.5;tone('metal');spark(b.x,b.y,'#ebbd8f',-Math.cos(b.aim),-Math.sin(b.aim),6);
+    }
+    if(dist(b,p)<29&&clearLine(b,p))damage(b.kind==='sentinel'?24:b.kind==='guard'?18:13,b);
     return;
   }
   const engaged=b.kind!=='carrier'&&b.alert>0&&!far;
   if(engaged&&visible&&d<(b.kind==='burrower'?85:65)&&!b.cool){
-    b.aim=Math.atan2(p.y-b.y,p.x-b.x);b.angle=b.aim;b.wind=b.kind==='burrower'?.66:.46;
+    b.aim=Math.atan2(p.y-b.y,p.x-b.x);b.angle=b.aim;b.windMax=b.wind=b.kind==='burrower'?.75:.54;tone('howl');
     return;
   }
   let t=engaged&&visible?p:engaged&&noise?heardShot:{x:tx,y:ty};
@@ -688,6 +747,7 @@ function bugUpdate(b,dt){
 function update(dt){
 
   elapsed+=dt;
+  updateChapter(dt);
   acidDrops=acidDrops.filter(d=>{d.life-=dt;if(d.life>0)return true;pools.push({x:d.x,y:d.y,life:5.5});return false;});
   pools=pools.filter(d=>{d.life-=dt;return d.life>0;});
   p.fire=Math.max(0,p.fire-dt);p.inv=Math.max(0,p.inv-dt);p.dash=Math.max(0,p.dash-dt);
@@ -696,6 +756,7 @@ function update(dt){
     if(!p.reload){const n=Math.min(CAP-p.ammo,p.reserve);p.ammo+=n;p.reserve-=n;tone('reload');}
   }
   const [dx,dy]=motion(),n=Math.hypot(dx,dy)||1;
+  const previousX=p.x;
   if(p.burst){p.burst=Math.max(0,p.burst-dt);move(p,p.dx*585*dt,p.dy*585*dt,13);}
   else {
     const slowed=spores.some(s=>((p.x-s.x)/s.rx)**2+((p.y-s.y)/s.ry)**2<1);
@@ -705,6 +766,7 @@ function update(dt){
     move(p,dx/n*speed*dt,dy/n*speed*dt,13);
   }
   if(pools.some(d=>dist(p,d)<28))damage(8);
+  afterMove(previousX);
   camera();
   if(mouse.inside)p.angle=Math.atan2(mouse.y/zoom+cam.y-p.y,mouse.x/zoom+cam.x-p.x);
   if(mouse.held||mouse.tap)fire();
@@ -716,15 +778,16 @@ function update(dt){
     const length=840*dt, steps=Math.ceil(length/6);
     for(let i=0;i<steps;i++){
       s.x+=s.dx*length/steps;s.y+=s.dy*length/steps;
-      if(blocked(s.x,s.y)){pop(s.x,s.y,'#b59e76',11,.16);return false;}
-      const b=bugs.find(o=>o.hp>0&&!(o.kind==='sentinel'&&progress.calmed)&&dist(s,o)<(o.kind==='sentinel'?23:19));
+      if(blocked(s.x,s.y)){spark(s.x,s.y,'#e8bf80',-s.dx,-s.dy,4);return false;}
+      const b=bugs.find(o=>o.hp>0&&!isBuried(o)&&!(o.kind==='sentinel'&&progress.calmed)&&dist(s,o)<(o.kind==='sentinel'?23:19));
       if(b){
         if(b.kind==='sentinel'&&!b.wind&&!b.lunge&&Math.cos(b.angle)*s.dx+Math.sin(b.angle)*s.dy<-.45){
-          pop(s.x,s.y,'#accfdb',12,.19);return false;
+          tone('metal');spark(s.x,s.y,'#bfe9f0',-s.dx,-s.dy,7);return false;
         }
         b.hp--;
         if(!b.hp&&b.kind==='sentinel'){progress.alcoveOpen=true;note('甲壳守卫已击退 · 根缝开启');}
-        b.flash=.19;b.alert=1.5;hitMarker=.16;pop(s.x,s.y,b.hp?'#ffe0a2':'#eea68a',b.hp?21:36,.29);return false;}
+        b.flash=.19;b.alert=1.5;hitMarker=.16;hardHit=!b.hp;tone('confirm');
+        spark(s.x,s.y,b.hp?'#ffe0a2':'#eea68a',s.dx,s.dy,b.hp?6:12);return false;}
     }
     return true;
   });
@@ -812,7 +875,7 @@ function bake(){
   bg.addColorStop(0,'#3e454c');bg.addColorStop(.34,'#2d4240');bg.addColorStop(.58,'#38374c');
   bg.addColorStop(.73,'#2b5052');bg.addColorStop(1,'#302b40');c.fillStyle=bg;c.fillRect(0,0,W,H);
   for(const route of routes){
-    for(const [width,alpha] of [[92,'12'],[58,'20'],[22,'21']]){
+    for(const [width,alpha] of [[91,'0a'],[58,'13'],[20,'0a']]){
       c.lineCap='round';c.lineJoin='round';c.lineWidth=width;c.strokeStyle=route.color+alpha;
       c.beginPath();c.moveTo(...route.points[0]);
       for(const point of route.points.slice(1))c.lineTo(...point);
@@ -830,6 +893,7 @@ function bake(){
   }
   for(const wall of walls){
     const {x,y,w,h}=wall;
+    if(x>=470&&x<1876){paintRockFace(c,wall,rng);continue;}
     c.fillStyle='#1b232c';c.fillRect(x,y,w,h);
     c.fillStyle='#39424d';c.fillRect(x+5,y+5,w-10,h-10);
     for(let j=0;j<h;j+=18){
@@ -845,6 +909,7 @@ function bake(){
     stroke(c,x,y,x-4,y-11,'#5f827259',1.4);stroke(c,x,y,x+5,y-7,'#81ae7a65',1.2);
   }
   paintRouteDetails(c);
+  paintChapter(c);
 }
 function screenPoint(o){return {x:(o.x-cam.x)*zoom,y:(o.y-cam.y)*zoom};}
 function worldDraw(){
@@ -896,8 +961,9 @@ function worldDraw(){
       if(!open)stroke(ctx,x-(gate.w>gate.h?20:0),y-(gate.w>gate.h?0:gate.h*.26),x+(gate.w>gate.h?20:0),y+(gate.w>gate.h?0:gate.h*.26),'#e0b183',3);
       continue;
     }
-    if(gate.flag==='rescueOpen'&&open){
-      pic(ctx,gate.art,x,y,117,72);
+    if(gate.flag==='rescueOpen'&&(open||bridgeTime>0)){
+      const amount=open?1:1-bridgeTime/1.25;
+      pic(ctx,gate.art,x-64*(1-amount),y,20+97*amount,72);
       stroke(ctx,x-55,y+16,x+54,y+16,'#7e9c697d',2);
     }else if(gate.flag==='trailOpen'){
       ctx.save();if(open)ctx.globalAlpha=.43;
@@ -923,12 +989,14 @@ function worldDraw(){
     }
     ctx.globalAlpha=1;
   }
+  drawChapterSignals();
   const usable=new Set(interactions());
   for(const [k,s] of Object.entries(spots)){
     const discover=usable.has(k);
-    if(k==='trace'||k==='membrane'){
+    if(k==='trace'||k==='membrane'||k==='relay'){
       if(!progress.scanner||(k==='membrane'&&!progress.trail))continue;
-      if((k==='trace'&&!progress.trail)||(k==='membrane'&&!progress.trailOpen)){
+      if(k==='relay'&&progress.relay)continue;
+      if((k==='trace'&&!progress.trail)||(k==='membrane'&&!progress.trailOpen)||k==='relay'){
         for(let i=0;i<3;i++)circ(ctx,s.x+i*9,s.y+(i%2)*6,2.5,'#c8ba8b');
         if(scanPulse>0||dist(p,s)<126)glow(ctx,s.x,s.y,38,38,'#7addda48');
       }
@@ -949,12 +1017,15 @@ function worldDraw(){
     if(b.hp<=0)continue;
     if(b.kind==='sentinel'&&progress.calmed)glow(ctx,b.x,b.y,35,31,'#8bd6ab53');
 
-    if(b.kind==='acid'&&b.wind&&b.acidTarget){ctx.lineWidth=2;circ(ctx,b.acidTarget.x,b.acidTarget.y,29,null,'#e5e894');}
+    if(b.kind==='acid'&&b.wind&&b.acidTarget){drawAcidWarning(b);}
     if(b.wind&&b.kind!=='acid'){
       const len=b.kind==='burrower'?84:66,ex=b.x+Math.cos(b.aim)*len,ey=b.y+Math.sin(b.aim)*len;
-      stroke(ctx,b.x,b.y,ex,ey,'#ffc4888e',13);
+      stroke(ctx,b.x,b.y,ex,ey,'#ffc48845',15);
+      stroke(ctx,b.x,b.y,ex,ey,'#ffc488d0',1+3*(1-b.wind/b.windMax));
       if(b.kind==='burrower')pic(ctx,'dirt_furrow',(ex+b.x)/2,(ey+b.y)/2,75,44,b.aim);
     }
+    if(isBuried(b)){glow(ctx,b.x,b.y,31,26,'#81603f8c');continue;}
+    if(b.stagger){ctx.lineWidth=1.3;circ(ctx,b.x,b.y,25,null,'#e7b671');}
     glow(ctx,b.x,b.y+5,27,20,'#131321aa');
     if(b.flash&&!reduced?.matches)ctx.filter='brightness(1.6)';
     if(!pic(ctx,id,b.x,b.y,b.kind==='sentinel'?74:b.kind==='guard'?56:50,b.kind==='sentinel'?61:46,b.angle))circ(ctx,b.x,b.y,16,'#6c546c');
@@ -975,9 +1046,10 @@ function worldDraw(){
     circ(ctx,f.x,f.y,f.r*(.35+.65*t),null,f.color);
     ctx.globalAlpha=1;
   }
+  drawCombatDetails();
   glow(ctx,p.x-2,p.y+6,28,22,'#0b1014c9');
   if(p.inv&&!reduced?.matches&&hitTime>.18)ctx.filter='brightness(1.6)';
-  if(!pic(ctx,'soldier',p.x,p.y,49,42,p.angle+(p.reload&&!reduced?.matches?Math.sin(Math.PI*p.reload/RELOAD)*.34:0)))circ(ctx,p.x,p.y,14,'#d2dfc9','#6edfcb');
+  if(!pic(ctx,'soldier',p.x-Math.cos(p.angle)*muzzle*21,p.y+playerBob()-Math.sin(p.angle)*muzzle*21,49,42,p.angle+(p.reload&&!reduced?.matches?Math.sin(Math.PI*p.reload/RELOAD)*.34:0)))circ(ctx,p.x,p.y,14,'#d2dfc9','#6edfcb');
   ctx.filter='none';
   if(scanPulse){
     const t=1-scanPulse/.68, size=reduced?.matches?210:35+410*t;
@@ -988,32 +1060,34 @@ function worldDraw(){
   ctx.restore();
 }
 function draw(){
-  worldDraw();
+  ctx.fillStyle='#101a1e';ctx.fillRect(0,0,vw,vh);
+  ctx.save();
+  if(cameraJolt&&!reduced?.matches)ctx.translate(Math.sin(clock*103)*cameraJolt*16,Math.cos(clock*97)*cameraJolt*12);
+  worldDraw();ctx.restore();
   const grd=ctx.createRadialGradient(vw/2,vh/2,Math.min(vw,vh)*.21,vw/2,vh/2,Math.hypot(vw,vh)*.60);
   grd.addColorStop(0,'#0f1a1e00');grd.addColorStop(1,'#060a13b8');ctx.fillStyle=grd;ctx.fillRect(0,0,vw,vh);
+  if(mode==='departure'){drawDeparture();return;}
   if(mode!=='play')return;
-  for(const target of objective().targets){
+  if(damageFrom!==null&&hitTime)drawDamageDirection();
+  for(const target of guide?objective().targets:[]){
     const s=screenPoint(target);
     if(s.x>16&&s.x<vw-16&&s.y>36&&s.y<vh-16){ctx.lineWidth=2;diamond(ctx,s.x,s.y-27,6,'#94e2de',false);}
   }
-  const me=screenPoint(p),y=me.y+(me.y>vh-111?-36:25);
-  ctx.fillStyle='#101b20e8';ctx.fillRect(me.x-25,y,50,14);
-  ctx.fillStyle='#42514d';ctx.fillRect(me.x-21,y+4,23,4);
-  ctx.fillStyle=p.hp<26?'#ff937a':'#aee8ba';ctx.fillRect(me.x-21,y+4,23*p.hp/100,4);
-  ctx.fillStyle=p.ammo<4?'#fbc985':'#e7f4e6';ctx.font='700 10px ui-monospace,monospace';ctx.textAlign='center';ctx.fillText(String(p.ammo).padStart(2,'0'),me.x+13,y+10);
+  const me=screenPoint(p);
   if(p.reload){
     ctx.strokeStyle='#8ee2eb';ctx.lineWidth=2;ctx.beginPath();ctx.arc(me.x,me.y,Math.max(21,26*zoom),-Math.PI/2,-Math.PI/2+2*Math.PI*(1-p.reload/RELOAD));ctx.stroke();
   }
   if(mouse.inside){
-    const x=mouse.x,y=mouse.y,col=p.reload?'#94e2de':p.ammo<4?'#f9c983':'#e4f8e1';
+    const x=mouse.x,y=mouse.y,gap=8+muzzle*48,col=p.reload?'#94e2de':p.ammo<4?'#f9c983':'#e4f8e1';
     ctx.lineWidth=1;circ(ctx,x,y,6,null,col);
     for(const s of [-1,1]){
-      stroke(ctx,x+s*8,y,x+s*13,y,col);stroke(ctx,x,y+s*8,x,y+s*13,col);
+      stroke(ctx,x+s*gap,y,x+s*(gap+5),y,col);stroke(ctx,x,y+s*gap,x,y+s*(gap+5),col);
     }
-    if(hitMarker)for(const s of [-1,1])for(const i of [-1,1])stroke(ctx,x+s*4,y+i*4,x+s*10,y+i*10,'#fff0c1',2);
+    if(hitMarker)for(const s of [-1,1])for(const i of [-1,1])stroke(ctx,x+s*4,y+i*4,x+s*10,y+i*10,hardHit?'#ff9f76':'#fff0c1',2);
   }
 }
 function drawMap(el,large=false){
+  if(!large){drawLocalMap(el);return;}
   const c=el.getContext('2d'),sx=el.width/W,sy=el.height/H;
   c.fillStyle='#152027';c.fillRect(0,0,el.width,el.height);
   for(const z of regions){
@@ -1037,7 +1111,7 @@ function drawMap(el,large=false){
     if(discovered.has(l.id))circ(c,l.x*sx,l.y*sy,large?3:1.5,l.color);
   }
   for(const b of barriers){c.fillStyle=gateOpen(b)?'#aee8ba':'#aa816a';c.fillRect(b.x*sx,b.y*sy,Math.max(2,b.w*sx),b.h*sy);}
-  for(const t of objective().targets)diamond(c,t.x*sx,t.y*sy,large?7:5,'#94e2de');
+  for(const t of guide?objective().targets:[])diamond(c,t.x*sx,t.y*sy,large?7:5,'#94e2de');
   c.lineWidth=1.4;circ(c,p.x*sx,p.y*sy,large?5:4,'#fff0db','#193333');
 }
 const mag=Array.from({length:CAP},()=>{
@@ -1045,8 +1119,9 @@ const mag=Array.from({length:CAP},()=>{
 });
 function hud(){
   const o=objective();
-  $('chapter').textContent=progress.root?'终章':progress.flood?'神经根岸':progress.echo?'孵化场与潮汐盆地':'序章';
+  $('chapter').textContent=progress.root?'终章':progress.flood?'神经根岸':progress.echo?'孵化场与潮汐盆地':'第一章';
   $('objective').textContent=o.name;$('objectiveHint').textContent=o.hint;
+  updateContextTip();
   const location=areaAt(p)?.name??'山脊通道';
   const tide=tideState();
   $('location').textContent=p.x>1990&&p.x<2580?location+' · '+tide.label+' '+tide.left+'秒':location;
@@ -1060,7 +1135,7 @@ function hud(){
     const s=spots[cue],pt=screenPoint(s),blockedAid=cue==='injured'&&!bagCount('dressing');
     $('promptTitle').textContent=s.title;$('promptDetail').textContent=blockedAid?'先到残骸附近找应急敷料':s.detail;
     $('prompt').style.left=clamp(pt.x,118,vw-118)+'px';
-    $('prompt').style.top=clamp(pt.y-22*zoom,110,vh-88)+'px';
+    $('prompt').style.top=clamp(pt.y-22*zoom,114,vh-88)+'px';
   }
   $('prompt').hidden=!cue;
   drawMap($('mini'));
@@ -1245,25 +1320,29 @@ function refreshDrawer(){
 function switchMode(next){
   clearBagDrag();bagSelection=null;hideBagTip();
   mode=next;keys.clear();mouse.held=mouse.tap=false;
+  document.body.dataset.mode=mode;
+  if(mode!=='play')$('contextTip').hidden=$('chapterCard').hidden=true;
   const live=mode==='play';
-  $('overlay').hidden=live||mode==='drawer';$('drawer').hidden=mode!=='drawer';$('hud').hidden=!live;
+  $('overlay').hidden=live||mode==='drawer'||mode==='departure';$('drawer').hidden=mode!=='drawer';$('hud').hidden=!live;
   $('mapBtn').disabled=$('bagBtn').disabled=$('pause').disabled=!live;
   $('prompt').hidden=true;
   $('toast').hidden=!live||!toastTime;$('subtitle').hidden=!live||!voiceTime;
-  if(live){document.activeElement?.blur();return;}
+  if(live||mode==='departure'){document.activeElement?.blur();return;}
   if(mode==='drawer')$('closeDrawer').focus();
   else $('primary').focus();
 }
 function overlay(next,title,intro,primary,action,alt='',altAction=null){
-  $('title').textContent=title;$('intro').textContent=intro;$('primary').textContent=primary;
+  $('title').textContent=title; $('overlayKicker').textContent=next==='menu'?'失事信号仍在广播':next==='end'?'终章':next==='dead'?'生命信号中断':'回声落地';$('intro').textContent=intro;$('primary').textContent=primary;
   $('secondary').textContent=alt;$('secondary').hidden=!alt;
   overlayAction=action;overlayAlt=altAction;
   switchMode(next);
 }
 function begin(saved=null){
   reset(saved);checkpoint=saved;audioOn();switchMode('play');
-  if(!saved){save('start');speak('……听到请回答。别……回收我。');}
-  else note('已从检查点继续');
+  if(!saved){save('start');showChapter('第一章','失事信号');speak('耳机：……听到请回答。别……回收我。');}
+  else if(progress.endingSequence==='launch'&&progress.endingStep===endingStages.launch.length){
+    switchMode('departure');tone('gate');
+  }else note('已从检查点继续');
 }
 function menu(){
   const s=readSave(),resume=!!s;
@@ -1303,6 +1382,7 @@ $('tabMap').onclick=()=>{drawerTab='map';refreshDrawer();};
 $('tabTasks').onclick=()=>{drawerTab='tasks';refreshDrawer();};
 $('tabBag').onclick=()=>{drawerTab='bag';refreshDrawer();};
 $('closeDrawer').onclick=()=>switchMode('play');
+$('guideBtn').onclick=toggleGuide;
 $('mute').onclick=()=>{
   soundOff=!soundOff;$('mute').textContent=soundOff?'音效关':'音效开';
   $('mute').setAttribute('aria-pressed',String(soundOff));if(!soundOff)audioOn();$('mute').blur();
@@ -1314,7 +1394,7 @@ window.addEventListener('keydown',e=>{
     e.preventDefault();return;
   }
   if(mode==='drawer'){
-    if(e.code==='Tab'&&!e.shiftKey&&e.target===canvas){e.preventDefault();switchMode('play');}
+    if(e.code==='KeyM'&&!e.repeat){e.preventDefault();if(drawerTab==='map')switchMode('play');else{drawerTab='map';refreshDrawer();}return;}
     if(e.code==='KeyI'||e.code==='KeyJ'){
       e.preventDefault();if(e.repeat)return;
       const want=e.code==='KeyI'?'bag':'tasks';
@@ -1324,7 +1404,7 @@ window.addEventListener('keydown',e=>{
   }
   if(mode!=='play')return;
   if(e.code==='Space'&&e.target instanceof HTMLButtonElement)return;
-  if(!['KeyW','KeyA','KeyS','KeyD','KeyR','KeyF','KeyE','KeyQ','KeyI','KeyJ','Tab','Space'].includes(e.code))return;
+  if(!['KeyW','KeyA','KeyS','KeyD','KeyR','KeyF','KeyE','KeyQ','KeyI','KeyJ','KeyM','KeyH','Tab','Space'].includes(e.code))return;
   e.preventDefault();
   if(['KeyW','KeyA','KeyS','KeyD'].includes(e.code)){keys.add(e.code);return;}
   if(e.repeat)return;
@@ -1333,7 +1413,8 @@ window.addEventListener('keydown',e=>{
   if(e.code==='KeyE')interact();
   if(e.code==='KeyQ'){if(bag.quick==='meds')useMed();else note('Q 未绑定 · 在背包中拖入急救剂');}
   if(e.code==='Space')dash();
-  if(e.code==='Tab')showDrawer('map');
+  if(e.code==='Tab'||e.code==='KeyM')showDrawer('map');
+  if(e.code==='KeyH')toggleGuide();
   if(e.code==='KeyI')showDrawer('bag');
   if(e.code==='KeyJ')showDrawer('tasks');
 });
@@ -1348,10 +1429,328 @@ window.addEventListener('pointerup',()=>{mouse.held=false;});
 window.addEventListener('pointercancel',()=>{mouse.held=mouse.tap=false;});
 window.addEventListener('blur',()=>{if(mode==='play')pause();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&mode==='play')pause();});
+const endingStages={
+  merge:[
+    {key:'groundRelay',x:3790,y:550,input:'E',title:'接通根网触点',hint:'从心室入口沿发光根须走，接通南侧触点。',art:'resonator',line:'根网：先留下一道只属于你的信号。'},
+    {key:'echoRelay',x:3920,y:340,input:'F',title:'扫描自己的回声',hint:'北侧有一道同频回声，靠近后按 F 把它辨认出来。',art:'memory_shard',line:'两道声音重叠了一瞬。你知道哪一道是自己。'},
+    {key:'sayName',x:3965,y:480,input:'E',title:'说出自己的名字',hint:'回到心室中央，说出自己的名字。',art:'planet_projection',line:'岑遥在群声里叫出了你的名字。'}
+  ],
+  launch:[
+    {key:'hullSeal',x:278,y:746,input:'E',title:'补上舱体裂口',hint:'到逃生舱东侧，用合金支撑裂口，让活体隔膜封住它。',art:'living_membrane',line:'活体隔膜合拢，舱压开始上升。'},
+    {key:'pilotLink',x:208,y:731,input:'E',title:'接入导航生物',hint:'绕到逃生舱西侧，把航向交给导航生物。',art:'navigation_symbiont',line:'导航生物回敲了两下，航道已经找到。'},
+    {key:'launchControl',x:246,y:686,input:'E',title:'启动逃生舱',hint:'到舱首启动推进器。',art:'crew_locator',line:'舱外的潮水向两边翻开。'}
+  ],
+  treaty:[
+    {key:'treeWitness',x:2322,y:179,input:'E',title:'请阿枝确认边界',hint:'请平台西侧的阿枝确认树民居所的边界。',art:'azhi',line:'阿枝：虫群可以通过潮沟。苗床以北留给树民。'},
+    {key:'consentBeacon',x:2490,y:260,input:'F',title:'发送可退出的共鸣',hint:'靠近东侧信标，按 F 发出约定的撤离信号。',art:'tree_beacon',line:'信标亮起。接入根网的人只要发出这道回声，就会有人来接。'},
+    {key:'signTreaty',x:2404,y:210,input:'E',title:'签署迁徙协议',hint:'把两方的确认带回守渠人面前。',art:'canal_keeper',line:'守渠人把两份同样的协议分别交给你和阿枝。'}
+  ]
+};
+for(const stage of Object.values(endingStages).flat()){
+  spots[stage.key]={...stage,detail:stage.hint};
+}
+const chapterHints=[
+  {x:443,y:510,r:108,label:'北侧：虫迹　·　南侧：敲击',tint:'#b7e2d2'},
+  {x:786,y:302,r:122,label:'搬运虫每次都在同一处停下',tint:'#b7e2d2'},
+  {x:691,y:688,r:123,label:'白布标出了避风的小路',tint:'#e8c890'},
+  {x:1370,y:457,r:120,label:'岩壁后传来熟悉的声音',tint:'#e9c58f'}
+];
+const clothTrail=[[519,688],[588,683],[645,695],[699,728],[721,780],[786,772],[838,791]];
+const rootsOnFloor=[
+  [[485,413],[530,454],[594,466],[612,508]],
+  [[705,609],[680,659],[613,696],[574,722]],
+  [[821,577],[862,604],[902,667],[922,710]],
+  [[1430,404],[1498,426],[1560,438],[1678,467]],
+  [[1468,544],[1558,510],[1648,506],[1766,465]]
+];
+let guide=false,northGateTime=0,bridgeTime=0,chapterTime=0,moved=false;
+let muzzle=0,cameraJolt=0,damageFrom=null,hardHit=false,particles=[],footTimer=0,ambientTimer=0,departureTime=0;
+function toggleGuide(){
+  guide=!guide;
+  $('guideBtn').textContent=guide?'路标开':'路标关';
+  $('guideBtn').setAttribute('aria-pressed',String(guide));
+  $('guideBtn').blur();
+  if(mode==='play')note(guide?'任务路标已开启':'任务路标已隐藏');
+}
+function resetChapter(saved){
+  northGateTime=bridgeTime=chapterTime=muzzle=cameraJolt=footTimer=ambientTimer=departureTime=0;
+  damageFrom=null;hardHit=false;particles=[];moved=!!saved?.progress?.scanner;
+}
+function showChapter(number,name){
+  $('chapterNumber').textContent=number;
+  $('chapterName').textContent=name;
+  $('chapterCard').hidden=false;chapterTime=3.5;
+}
+function currentEndingStep(){
+  if(!progress?.endingSequence)return null;
+  return endingStages[progress.endingSequence]?.[progress.endingStep]??null;
+}
+function startEnding(id){
+  if(progress.ending||progress.endingSequence||!finaleInteractions().includes(id))return;
+  progress.endingSequence=id;
+  progress.endingStep=0;
+  progress.tracking=id;
+  save('finale');switchMode('play');
+  speak(currentEndingStep().hint);
+}
+function advanceEnding(input){
+  const step=currentEndingStep();
+  if(!step||input!==step.input||dist(p,step)>108||!clearLine(p,step))return false;
+  const id=progress.endingSequence;
+  progress.endingStep++;
+  record(step.line);tone(input==='F'?'echo':'pick');
+  if(progress.endingStep===endingStages[id].length){
+    if(id==='launch'){
+      save('finale');
+      departureTime=0;switchMode('departure');tone('gate');
+    }else completeEnding(id);
+  }else{save('finale');speak(step.line);}
+  return true;
+}
+function updateDeparture(dt){
+  const before=departureTime;
+  departureTime+=dt;
+  if(before<1.4&&departureTime>=1.4)tone('echo');
+  if(departureTime>=4.5)completeEnding('launch');
+}
+function drawDeparture(){
+  const t=departureTime/4.5,a=reduced?.matches?0:clamp((t-.2)*1.35,0,1);
+  const cloud=ctx.createLinearGradient(0,0,0,vh);
+  cloud.addColorStop(0,'#0a1124');cloud.addColorStop(.62,'#163844');cloud.addColorStop(1,'#264e4b');
+  ctx.globalAlpha=.35+.65*a;ctx.fillStyle=cloud;ctx.fillRect(0,0,vw,vh);ctx.globalAlpha=1;
+  for(let i=0;i<56;i++){
+    const x=(i*131)%vw,y=(i*i*17+a*vh*.65)%vh;
+    circ(ctx,x,y,i%3===0?1.5:.8,'#a3c9d979');
+  }
+  const y=vh*.65-a*vh*.39;
+  glow(ctx,vw/2,y+35,82,65+a*90,'#79d8d58a');
+  if(!pic(ctx,'escape_pod',vw/2,y,114-57*a,95-47*a,-Math.PI/2))diamond(ctx,vw/2,y,18,'#dfedec');
+  ctx.fillStyle='#e4f2ee';ctx.font='600 16px system-ui';ctx.textAlign='center';
+  ctx.fillText(t<.29?'推进器点火':t<.68?'逃生舱离地':'航向已交给导航生物',vw/2,vh-66);
+}
+function updateChapter(dt){
+  northGateTime=Math.max(0,northGateTime-dt);
+  const carrier=bugs.find(b=>b.north&&b.hp>0);
+  if(carrier&&carrier.x>917&&carrier.x<1065&&Math.abs(carrier.y-306)<32&&!progress.trailOpen){
+    if(!northGateTime&&progress.scanner&&dist(p,carrier)<220)tone('gate');
+    northGateTime=Math.max(northGateTime,.65);
+    if(progress.scanner&&dist(p,spots.membrane)<220&&clearLine(p,carrier)){
+      progress.northWitness=true;
+    }
+  }
+  if(!progress.trailOpen&&p.x>960&&p.x<1037&&Math.abs(p.y-306)<58&&northGateTime){
+    northGateTime=Math.max(northGateTime,.22);
+  }
+  if(bridgeTime){
+    bridgeTime=Math.max(0,bridgeTime-dt);
+    if(!bridgeTime){
+      progress.rescueOpen=true;progress.bridgeCeremony=true;
+      record('阿枝放下吊桥。她答应在来路点亮树脂灯，等伤员和搬运虫各自安全通过。');
+      tone('gate');save('bridge');
+      speak('阿枝：前面第二盏灯底下能走。守卫听得见枪声，尽量贴着根走。');
+    }
+  }
+  chapterTime=Math.max(0,chapterTime-dt);
+  if(!chapterTime)$('chapterCard').hidden=true;
+  muzzle=Math.max(0,muzzle-dt);cameraJolt=Math.max(0,cameraJolt-dt);
+  footTimer=Math.max(0,footTimer-dt);ambientTimer-=dt;
+  particles=particles.filter(s=>{s.life-=dt;s.x+=s.dx*dt;s.y+=s.dy*dt;return s.life>0;});
+  if(ambientTimer<=0){
+    if(!progress.rescue&&dist(p,spots.injured)<251){tone('metal');ambientTimer=3.1;}
+    else if(!progress.echo&&p.x>1357&&p.x<1826&&p.y>370&&p.y<550){tone('echo');ambientTimer=4.2;}
+    else if(!progress.scanner&&p.x<430){tone('dry');ambientTimer=4.7;}
+    else ambientTimer=.5;
+  }
+}
+function afterMove(previousX){
+  const [x,y]=motion();
+  if(x||y){
+    moved=true;
+    if(!footTimer){tone('step');footTimer=.34;}
+  }
+  if(previousX<1034&&p.x>=1034&&Math.abs(p.y-306)<59&&!progress.trailOpen&&northGateTime){
+    progress.trailOpen=true;
+    record(progress.northWitness?'你跟着搬运虫通过了隔膜，看清它搬运的是岑遥的定位器。':'扫描器重放了虫群信号。隔膜留下了通行记忆，返回时仍可打开。');
+    save('trail');
+    speak(progress.scanner?'扫描器：已记录通行信号。搬运物与岑遥的定位器匹配。':'搬运虫钻进了孵化场，隔膜在你身后慢慢舒展。');
+  }
+}
+function updateContextTip(){
+  let label='';
+  const step=currentEndingStep();
+  if(step?.input==='F'&&dist(p,step)<104&&clearLine(p,step))label='F　'+step.title;
+  else if(!moved)label='WASD　从失事机舱旁起身';
+  else if(!progress.scanner&&dist(p,spots.scanner)<170)label='E　取回扫描器';
+  else if(progress.scanner&&!progress.relay&&dist(p,spots.relay)<132)label='F　扫描应答桩';
+  else if(!progress.trail&&progress.scanner&&dist(p,spots.trace)<118)label='F　扫描搬运痕迹';
+  else if(progress.trail&&!progress.trailOpen&&dist(p,spots.membrane)<120){
+    label=northGateTime?'隔膜已张开，穿过去':'F　重放扫描到的通行信号';
+  }else{
+    const landmark=chapterHints.find(h=>dist(p,h)<h.r&&clearLine(p,h));
+    if(landmark&&!progress.echo&&!cue)label=landmark.label;
+  }
+  $('contextTip').textContent=label;
+  $('contextTip').hidden=!label;
+}
+function drawLocalMap(el){
+  const c=el.getContext('2d'),scale=el.height/435;
+  c.fillStyle='#122129';c.fillRect(0,0,el.width,el.height);
+  c.save();c.translate(el.width/2-p.x*scale,el.height/2-p.y*scale);c.scale(scale,scale);
+  for(const region of regions){
+    c.fillStyle=visited.has(region.name)?'#3e5a58':'#27383e';c.fillRect(region.x,region.y,region.w,region.h);
+  }
+  c.fillStyle='#14212a';
+  for(const wall of walls)c.fillRect(wall.x,wall.y,wall.w,wall.h);
+  for(const gate of barriers){
+    c.fillStyle=gateOpen(gate)?'#a1cbb0':'#9e755d';c.fillRect(gate.x,gate.y,gate.w,gate.h);
+  }
+  for(const l of landmarks)if(discovered.has(l.id))circ(c,l.x,l.y,14,l.color);
+  if(guide)for(const target of objective().targets)diamond(c,target.x,target.y,15,'#94e2de');
+  c.restore();
+  c.lineWidth=1.5;circ(c,el.width/2,el.height/2,4,'#fff5df','#14282d');
+}
+function paintRockFace(c,wall,rng){
+  const {x,y,w,h}=wall;
+  c.fillStyle='#080f1670';c.fillRect(x+5,y+8,w+3,h+4);
+  c.save();c.beginPath();c.rect(x,y,w,h);c.clip();
+  const base=c.createLinearGradient(x,y,x+Math.min(w,120),y+Math.min(h,88));
+  base.addColorStop(0,x<1060?'#43534f':'#4e4748');
+  base.addColorStop(.48,x<1060?'#2f3e3b':'#363237');
+  base.addColorStop(1,'#1c252d');
+  c.fillStyle=base;c.fillRect(x,y,w,h);
+  for(let row=y-18;row<y+h;row+=30){
+    for(let col=x-20;col<x+w;col+=55){
+      const originX=col+rng()*27,originY=row+rng()*15,span=30+rng()*48;
+      c.beginPath();c.moveTo(originX,originY+10);
+      c.lineTo(originX+span*.34,originY);c.lineTo(originX+span*.83,originY+3);
+      c.lineTo(originX+span,originY+14);c.lineTo(originX+span*.48,originY+26);c.closePath();
+      c.fillStyle=['#6e72602b','#a19a7c17','#0a15222b','#334c4059'][Math.floor(rng()*4)];c.fill();
+      stroke(c,originX+3,originY+9,originX+span*.34,originY+1,'#b4b39932',1.3);
+    }
+  }
+  for(let i=0;i<(w+h)/17;i++){
+    const left=rng()>.5,px=x+(left?rng()*17:w-rng()*17),py=y+rng()*h,dx=left?1:-1;
+    stroke(c,px,py,px+dx*(9+rng()*22),py+5,'#15212191',1.1);
+  }
+  c.restore();
+  c.strokeStyle='#74817563';c.lineWidth=1.5;c.strokeRect(x+.75,y+.75,w-1.5,h-1.5);
+}
+function paintChapter(c){
+  c.save();
+  for(const [x,y,rx,ry,color] of [[216,454,216,138,'#5aa9ba38'],[480,531,142,177,'#43bb9823'],[692,707,237,118,'#8da46933'],[801,294,167,113,'#54b78d2b'],[1260,489,207,107,'#987aa236'],[1670,463,246,145,'#cc8f4d64']]){
+    glow(c,x,y,rx,ry,color);
+  }
+  for(let i=0;i<43;i++){
+    const x=98+i*8,y=480+Math.sin(i*.31)*9;
+    stroke(c,x,y,x+10,y+1,i%5===0?'#8db0b088':'#0e202879',i%4+1);
+  }
+  for(let i=0;i<31;i++){
+    const x=85+(i*87)%370,y=408+(i*53)%167;
+    c.fillStyle=i%3?'#657c7d5e':'#a9a48587';
+    c.beginPath();c.moveTo(x,y);c.lineTo(x+6+i%11,y+4);c.lineTo(x+1,y-6-i%8);c.fill();
+  }
+  for(const root of rootsOnFloor){
+    c.lineCap='round';c.lineJoin='round';
+    for(const [width,col,offset] of [[20,'#171e23bb',6],[14,'#4c51448d',0],[4,'#80857461',-3]]){
+      c.lineWidth=width;c.strokeStyle=col;c.beginPath();c.moveTo(root[0][0],root[0][1]+offset);
+      for(const [x,y] of root.slice(1))c.lineTo(x,y+offset);
+      c.stroke();
+    }
+  }
+  for(const [i,[x,y]] of clothTrail.entries()){
+    c.save();c.translate(x,y);c.rotate(i*.57-.36);
+    c.fillStyle='#1a2824b0';c.fillRect(-7,1,15,5);
+    c.fillStyle=i%2?'#c4d6c5':'#e2e1cb';c.fillRect(-7,-2,12,4);
+    c.fillStyle='#a67260';c.fillRect(2,-2,3,4);c.restore();
+  }
+  for(let i=0;i<70;i++){
+    const x=462+(i*129)%517,y=160+(i*193)%700;
+    if(blocked(x,y,7))continue;
+    stroke(c,x,y,x-3,y-7,'#8cc59c72',1.2);
+    circ(c,x-3,y-7,1.2,'#99caa672');
+  }
+  for(const [x,y] of [[1440,439],[1498,494],[1555,430],[1588,505],[1644,420],[1751,483]]){
+    glow(c,x,y,32,18,'#eab26754');
+    stroke(c,x-7,y+4,x,y-6,'#cda471a3',1.5);
+    circ(c,x,y-6,2.3,'#ffd196a3');
+  }
+  c.restore();
+}
+function drawChapterSignals(){
+  const at=(x,y,r=40)=>x>cam.x-r&&x<cam.x+vw/zoom+r&&y>cam.y-r&&y<cam.y+vh/zoom+r;
+  if(!progress.scanner&&at(353,500)){
+    const t=.45+.55*(1+Math.sin(clock*5))*.5;
+    ctx.globalAlpha=t;glow(ctx,353,500,66,44,'#83e6eb8f');circ(ctx,353,503,3,'#c0fbff');ctx.globalAlpha=1;
+  }
+  for(let i=0;i<42;i++){
+    const x=453+(i*131)%520+Math.sin(clock*.8+i)*6,y=228+(i*79)%556+Math.cos(clock*.68+i)*4;
+    if(!at(x,y,6))continue;
+    ctx.globalAlpha=.23+.42*(1+Math.sin(clock*.9+i))*.5;circ(ctx,x,y,1+i%3*.3,'#bbf6bc');
+  }
+  ctx.globalAlpha=1;
+  if(!progress.rescue&&at(spots.injured.x,spots.injured.y,80)){
+    const t=clock%3.1;
+    if(t<1){ctx.globalAlpha=1-t;ctx.lineWidth=1.3;circ(ctx,spots.injured.x-7,spots.injured.y-10,12+t*37,null,'#ecd2a2');ctx.globalAlpha=1;}
+  }
+  if(progress.bridgeCeremony){
+    for(const [x,y] of [[891,697],[1065,707],[1177,677]]){
+      if(at(x,y)){glow(ctx,x,y,42,24,'#ffc97572');circ(ctx,x,y,3,'#ffde9a');}
+    }
+  }
+  if(at(1690,466,110)&&!progress.echo){
+    glow(ctx,1690,466,120,73,'#f3b16c62');
+    ctx.globalAlpha=.24+.12*Math.sin(clock*2.4);ctx.lineWidth=1.8;circ(ctx,1690,466,50+7*Math.sin(clock*2),null,'#ffcf91');ctx.globalAlpha=1;
+  }
+  const step=currentEndingStep();
+  if(step&&at(step.x,step.y,80)){
+    glow(ctx,step.x,step.y,55,38,'#9ce5d771');
+    ctx.lineWidth=2;circ(ctx,step.x,step.y,24+3*Math.sin(clock*3),null,'#aee5d0');
+    if(step.input==='F')pic(ctx,step.art,step.x,step.y,40,36);
+  }
+}
+function drawAcidWarning(b){
+  const t=1-b.wind/b.windMax,{x,y}=b.acidTarget;
+  circ(ctx,x,y,29,'#b4ce4a21');
+  ctx.lineWidth=2;circ(ctx,x,y,29,null,'#dfde78a0');
+  ctx.beginPath();ctx.arc(x,y,29,-Math.PI/2,-Math.PI/2+Math.PI*2*t);ctx.strokeStyle='#f4edaf';ctx.stroke();
+}
+function isBuried(b){
+  return b.kind==='burrower'&&b.wind>.16;
+}
+function playerBob(){
+  return mode==='play'&&!reduced?.matches&&motion().some(Boolean)?Math.sin(clock*22)*1.7:0;
+}
+function spark(x,y,color,dx,dy,count){
+  for(let i=0;i<count;i++){
+    const angle=Math.atan2(dy,dx)+(i/(count-1)-.5)*2.6;
+    const speed=46+(i*23)%83;
+    particles.push({x,y,dx:Math.cos(angle)*speed,dy:Math.sin(angle)*speed,color,life:.16+(i%3)*.031});
+  }
+}
+function drawCombatDetails(){
+  for(const f of particles){
+    ctx.globalAlpha=clamp(f.life*5,0,1);stroke(ctx,f.x-f.dx*.038,f.y-f.dy*.038,f.x,f.y,f.color,1.4);
+  }
+  ctx.globalAlpha=1;
+  if(muzzle){
+    const dx=Math.cos(p.angle),dy=Math.sin(p.angle),x=p.x+dx*26,y=p.y+dy*26;
+    ctx.globalAlpha=reduced?.matches?.52:clamp(muzzle/.06,0,1);
+    glow(ctx,x,y,38,30,'#ffc170a6');stroke(ctx,x,y,x+dx*19,y+dy*19,'#fff1bf',3);
+    ctx.globalAlpha=1;
+  }
+}
+function drawDamageDirection(){
+  const x=vw/2,y=vh/2;
+  ctx.save();ctx.translate(x,y);ctx.rotate(damageFrom);
+  ctx.globalAlpha=hitTime/.37;
+  ctx.beginPath();ctx.moveTo(97,0);ctx.lineTo(80,-9);ctx.lineTo(83,0);ctx.lineTo(80,9);ctx.closePath();
+  ctx.fillStyle='#ff9a7a';ctx.fill();ctx.restore();
+}
+
 reset();bake();resize();menu();new ResizeObserver(resize).observe(canvas);
 function frame(t){
   const dt=frameLast?Math.min(.035,(t-frameLast)/1000):0;frameLast=t;clock+=dt;
-  if(mode==='play')update(dt);else camera();
+  if(mode==='play')update(dt);else if(mode==='departure')updateDeparture(dt);else camera();
   draw();if(mode==='play')hud();requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
